@@ -1,8 +1,7 @@
 package com.example.testapplication.api
 
-import com.example.testapplication.model.Response
+import com.example.testapplication.model.weather.Response
 import io.reactivex.Single
-import io.reactivex.SingleObserver
 import javax.inject.Inject
 
 class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : ApiHelper {

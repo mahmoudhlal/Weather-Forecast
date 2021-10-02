@@ -1,4 +1,4 @@
-package com.example.testapplication.model
+package com.example.testapplication.model.weather
 
 data class Coord(
     val lat: Double,

@@ -4,8 +4,9 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.testapplication.model.Response
+import com.example.testapplication.core.BaseViewModel
+import com.example.testapplication.model.Location
+import com.example.testapplication.model.weather.Response
 import com.example.testapplication.repository.MainRepository
 import com.example.testapplication.utils.API_KEY
 import com.example.testapplication.utils.NetworkHelper
@@ -15,7 +16,6 @@ import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,55 +24,43 @@ class MainViewModel @Inject constructor(
     private val networkHelper: NetworkHelper
 ) : ViewModel(){
 
-    /*private val _users = MutableLiveData<Resource<List<User>>>()
+    private val _forecast = MutableLiveData<Resource<Response>>()
 
-    val users: LiveData<Resource<List<User>>>
-        get() = _users
-*/
-    init {
-        fetchUsers()
-    }
+    val forecast: LiveData<Resource<Response>>
+        get() = _forecast
 
-    fun fetchUsers() {
-        /*viewModelScope.launch {
-            _users.postValue(Resource.loading(null))
-            if (networkHelper.isNetworkConnected()) {
-                mainRepository.getUsers().let {
-                    if (it.isSuccessful) {
-                        _users.postValue(Resource.success(it.body()))
-                    } else _users.postValue(Resource.error(it.errorBody().toString(), null))
-                }
-            } else _users.postValue(Resource.error("No internet connection", null))
-        }*/
-        mainRepository.searchForecast("London" , API_KEY)
-            .subscribeOn(Schedulers.io())
-            // Be notified on the main thread
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe( getSingleObserver())
+
+    fun getWeather(cityName : String = "London" , location : Location? = null) {
+        _forecast.postValue(Resource.loading(null))
+        if (networkHelper.isNetworkConnected()) {
+            val searchObservable =
+                if (location == null)
+                    mainRepository.searchForecast(cityName, API_KEY)
+                else
+                    mainRepository.getForecastByCoordinate(
+                        location.lat.toString(),
+                        location.lng.toString(),
+                        API_KEY
+                    )
+            searchObservable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(getSingleObserver())
+        } else _forecast.postValue(Resource.error("No internet connection", null))
 
     }
 
     private fun getSingleObserver(): SingleObserver<Response?>{
         return object : SingleObserver<Response?> {
             override fun onSubscribe(d: Disposable) {
-                Log.d(
-                    "TAG",
-                    " onSubscribe : " + d.isDisposed
-                )
+                Log.d("TAG", " onSubscribe : " + d.isDisposed)
             }
 
             override fun onSuccess(value: Response) {
-                Log.d(
-                    "TAG",
-                    " onNext value : $value"
-                )
+                _forecast.postValue(Resource.success(value))
             }
 
             override fun onError(e: Throwable) {
-                Log.d(
-                    "TAG",
-                    " onError : " + e.message
-                )
+                _forecast.postValue(e.message?.let { Resource.error(it, null) })
             }
         }
     }
