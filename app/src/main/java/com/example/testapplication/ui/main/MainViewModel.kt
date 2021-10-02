@@ -1,22 +1,24 @@
 package com.example.testapplication.ui.main
 
+import android.text.format.DateUtils
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.testapplication.core.BaseViewModel
 import com.example.testapplication.model.Location
+import com.example.testapplication.model.WeatherInfo
+import com.example.testapplication.model.weather.Item
 import com.example.testapplication.model.weather.Response
 import com.example.testapplication.repository.MainRepository
-import com.example.testapplication.utils.API_KEY
-import com.example.testapplication.utils.NetworkHelper
-import com.example.testapplication.utils.Resource
+import com.example.testapplication.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -24,9 +26,9 @@ class MainViewModel @Inject constructor(
     private val networkHelper: NetworkHelper
 ) : ViewModel(){
 
-    private val _forecast = MutableLiveData<Resource<Response>>()
+    private val _forecast = MutableLiveData<Resource<WeatherInfo>>()
 
-    val forecast: LiveData<Resource<Response>>
+    val forecast: LiveData<Resource<WeatherInfo>>
         get() = _forecast
 
 
@@ -56,13 +58,28 @@ class MainViewModel @Inject constructor(
             }
 
             override fun onSuccess(value: Response) {
-                _forecast.postValue(Resource.success(value))
+                val data = value.list[0]
+                val date = data.dt_txt.toFormatDate()
+                val item = WeatherInfo(0 , value.city.name
+                    , data.main.temp.toCelsius().roundToInt().toString()
+                    , data.main.temp_min.toCelsius().roundToInt().toString()
+                    , data.main.temp_max.toCelsius().roundToInt().toString()
+                    , data.weather[0].description.capitalize()
+                    , date)
+
+                _forecast.postValue(Resource.success(item))
             }
 
             override fun onError(e: Throwable) {
                 _forecast.postValue(e.message?.let { Resource.error(it, null) })
             }
         }
+    }
+
+    private fun getTodayForecast(value: Response) : ArrayList<Item>{
+        return value.list.filter {
+            isToday(it.dt_txt)
+        } as ArrayList<Item>
     }
 
 }

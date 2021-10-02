@@ -2,8 +2,8 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'dagger.hilt.android.plugin'
-    id 'kotlin-kapt'
     id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -19,6 +19,15 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField 'String', 'BASE_URL', "\"https://api.openweathermap.org/data/2.5/\""
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += [
+                        "room.schemaLocation":"$projectDir/schemas".toString(),
+                        "room.incremental":"true",
+                        "room.expandProjection":"true"]
+            }
+        }
     }
 
     buildTypes {
@@ -29,6 +38,7 @@ android {
     }
 
     buildFeatures {
+        dataBinding true
         buildConfig = true
     }
 
@@ -76,8 +86,12 @@ dependencies {
     //Location Services
     implementation "com.google.android.gms:play-services-location:18.0.0"
 
+    //Permission Dispatcher
     implementation "com.github.permissions-dispatcher:permissionsdispatcher:$permission_version"
     implementation "com.github.permissions-dispatcher:permissionsdispatcher-processor:$permission_version"
 
-
+    //Room
+    implementation "androidx.room:room-runtime:2.3.0"
+    kapt "androidx.room:room-compiler:2.3.0"
+    implementation "androidx.room:room-rxjava2:2.3.0"
 }
