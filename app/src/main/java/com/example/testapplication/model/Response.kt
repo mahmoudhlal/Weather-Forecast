@@ -2,8 +2,8 @@ package com.example.testapplication.model
 
 data class Response(
     val city: City,
-    val cnt: Int,
+    val cnt: Double,
     val cod: String,
     val list: List<Item>,
-    val message: Int
+    val message: Double
 )

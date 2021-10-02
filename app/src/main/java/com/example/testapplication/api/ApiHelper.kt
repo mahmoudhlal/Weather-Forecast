@@ -2,6 +2,7 @@ package com.example.testapplication.api
 
 import com.example.testapplication.model.Response
 import io.reactivex.Single
+import io.reactivex.SingleObserver
 
 interface ApiHelper {
 
