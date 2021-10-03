@@ -28,3 +28,7 @@ fun isHorizontal(recyclerView: RecyclerView, isHorizontal: Boolean?) {
             LinearLayoutManager.HORIZONTAL, false
         )
 }
+@BindingAdapter("queryHint")
+fun setQueryHint(searchView: SearchView, query: String?) {
+    searchView.queryHint = query
+}

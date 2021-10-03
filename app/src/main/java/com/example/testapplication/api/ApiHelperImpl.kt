@@ -1,6 +1,7 @@
 package com.example.testapplication.api
 
 import com.example.testapplication.model.weather.Response
+import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject
 

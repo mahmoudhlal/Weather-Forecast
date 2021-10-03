@@ -3,6 +3,8 @@ package com.example.testapplication.ui.main
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
@@ -16,6 +18,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.RuntimePermissions
+import java.util.*
 
 @RuntimePermissions
 @AndroidEntryPoint
@@ -32,34 +35,28 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         mBinding = DataBindingUtil.setContentView(this , R.layout.activity_main)
 
+        mainViewModel.loadLocalData()
+
         getCurrentLocationWithPermissionCheck()
         mBinding?.lifecycleOwner = this
         mBinding?.vmMain = mainViewModel
 
         setupObserver()
         mBinding?.searchView?.let { mainViewModel.search(it) }
-        mBinding?.searchView?.setOnCloseListener {
-            mainViewModel.closeSearch()
-            mBinding?.searchView?.hideKeyboard()
-            return@setOnCloseListener true
-        }
+
     }
 
     private fun setupObserver() {
-        /*mainViewModel.forecast.observe(this, Observer {
+        mainViewModel.error.observe(this, {
             when (it.status) {
-                Status.SUCCESS -> {
-                    //mBinding?.item = it.data
-                }
-                Status.LOADING -> {
-
-                }
                 Status.ERROR -> {
                     Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
                 }
+                else -> return@observe
             }
-        })*/
+        })
     }
+
 
 
     /// PERMISSION
