@@ -33,6 +33,8 @@ fun getNearestDate(){
 }
 
 fun isToday(date : String):Boolean{
-    val long = date.toFormatDate()?.toLong()
+    val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    val d = format.parse(date)
+    val long = d?.time
     return long?.let { DateUtils.isToday(it) } == true
 }

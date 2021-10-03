@@ -17,3 +17,27 @@ fun String.toFormatDate() : String?{
     return null
 }
 
+fun String.toHour() : String?{
+    try {
+        val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        val date = format.parse(this)
+        return SimpleDateFormat("hh:mm a").format(date)
+    } catch (e: ParseException) {
+        e.printStackTrace()
+    }
+    return null
+}
+
+fun String.toDayFormat() : String?{
+    try {
+        val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        val date = format.parse(this)
+        return if (isToday(this)) "Today" else SimpleDateFormat("EEE").format(date)
+    } catch (e: ParseException) {
+        e.printStackTrace()
+    }
+    return null
+}
+
+
+

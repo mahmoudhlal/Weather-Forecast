@@ -3,7 +3,6 @@ package com.example.testapplication.ui.main
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
-import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -12,7 +11,7 @@ import androidx.lifecycle.Observer
 import com.example.testapplication.R
 import com.example.testapplication.core.BaseActivity
 import com.example.testapplication.databinding.ActivityMainBinding
-import com.example.testapplication.model.Location
+import com.example.testapplication.model.custom.Location
 import com.example.testapplication.utils.Status
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,7 +23,6 @@ import permissions.dispatcher.RuntimePermissions
 class MainActivity : BaseActivity() {
 
     private val mainViewModel : MainViewModel by viewModels()
-
     private val locationSettingsScreen =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             getCurrentLocation()
@@ -36,15 +34,17 @@ class MainActivity : BaseActivity() {
         mBinding = DataBindingUtil.setContentView(this , R.layout.activity_main)
 
         getCurrentLocationWithPermissionCheck()
+        mBinding?.lifecycleOwner = this
+        mBinding?.vmMain = mainViewModel
 
         setupObserver()
     }
 
     private fun setupObserver() {
-        mainViewModel.forecast.observe(this, Observer {
+        /*mainViewModel.forecast.observe(this, Observer {
             when (it.status) {
                 Status.SUCCESS -> {
-                    mBinding?.item = it.data
+                    //mBinding?.item = it.data
                 }
                 Status.LOADING -> {
 
@@ -53,9 +53,11 @@ class MainActivity : BaseActivity() {
                     Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
                 }
             }
-        })
+        })*/
     }
 
+
+    /// PERMISSION
     @NeedsPermission(android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_COARSE_LOCATION)
     fun getCurrentLocation() {
         if (isLocationEnabled()) {

@@ -1,18 +1,21 @@
 package com.example.testapplication.ui.main
 
-import android.text.format.DateUtils
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.testapplication.core.BaseViewModel
-import com.example.testapplication.model.Location
-import com.example.testapplication.model.WeatherInfo
+import com.example.testapplication.model.custom.Location
+import com.example.testapplication.model.custom.WeatherInfo
 import com.example.testapplication.model.weather.Item
 import com.example.testapplication.model.weather.Response
 import com.example.testapplication.repository.MainRepository
+import com.example.testapplication.ui.adapter.DailyForecastAdapter
+import com.example.testapplication.ui.adapter.TodayForecastAdapter
 import com.example.testapplication.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
+import io.reactivex.ObservableOnSubscribe
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -26,14 +29,20 @@ class MainViewModel @Inject constructor(
     private val networkHelper: NetworkHelper
 ) : ViewModel(){
 
-    private val _forecast = MutableLiveData<Resource<WeatherInfo>>()
+    val forecast = MutableLiveData<WeatherInfo>()
 
-    val forecast: LiveData<Resource<WeatherInfo>>
-        get() = _forecast
+    /*val forecast: LiveData<Resource<WeatherInfo>>
+        get() = _forecast*/
+
+    val progressVisibility = MutableLiveData(true)
+
+    val todayForecastAdapter  =  TodayForecastAdapter()
+    val dailyForecastAdapter  =  DailyForecastAdapter()
+
 
 
     fun getWeather(cityName : String = "London" , location : Location? = null) {
-        _forecast.postValue(Resource.loading(null))
+        //forecast.postValue(Resource.loading(null))
         if (networkHelper.isNetworkConnected()) {
             val searchObservable =
                 if (location == null)
@@ -47,7 +56,7 @@ class MainViewModel @Inject constructor(
             searchObservable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(getSingleObserver())
-        } else _forecast.postValue(Resource.error("No internet connection", null))
+        } /*else forecast.postValue(Resource.error("No internet connection", null))*/
 
     }
 
@@ -58,6 +67,8 @@ class MainViewModel @Inject constructor(
             }
 
             override fun onSuccess(value: Response) {
+                progressVisibility.value = false
+
                 val data = value.list[0]
                 val date = data.dt_txt.toFormatDate()
                 val item = WeatherInfo(0 , value.city.name
@@ -66,12 +77,19 @@ class MainViewModel @Inject constructor(
                     , data.main.temp_max.toCelsius().roundToInt().toString()
                     , data.weather[0].description.capitalize()
                     , date)
+                forecast.value = item
 
-                _forecast.postValue(Resource.success(item))
+                val todayForecast = getTodayForecast(value)
+                todayForecastAdapter.updateList(todayForecast)
+
+                val dailyForecast = getDailyForecast(value)
+                dailyForecastAdapter.updateList(dailyForecast)
+
             }
 
             override fun onError(e: Throwable) {
-                _forecast.postValue(e.message?.let { Resource.error(it, null) })
+                progressVisibility.value = false
+                //forecast.postValue(e.message?.let { Resource.error(it, null) })
             }
         }
     }
@@ -80,6 +98,24 @@ class MainViewModel @Inject constructor(
         return value.list.filter {
             isToday(it.dt_txt)
         } as ArrayList<Item>
+    }
+
+    private fun getDailyForecast(value: Response) : ArrayList<Item>{
+        val list  : ArrayList<Item> = arrayListOf()
+        val dateList  : ArrayList<String> = arrayListOf()
+        value.list.forEach {
+            if (dateList.size == 0) {
+                dateList.add(it.dt_txt.toFormatDate().toString())
+                list.add(it)
+            }else{
+                if (dateList.contains(it.dt_txt.toFormatDate().toString()).not()) {
+                    dateList.add(it.dt_txt.toFormatDate().toString())
+                    list.add(it)
+                }
+            }
+        }
+        dateList.clear()
+        return list
     }
 
 }

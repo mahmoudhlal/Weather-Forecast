@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <variable
+            name="item"
+            type="com.example.testapplication.model.custom.DayForecast" />
+    </data>
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:layout_margin="10sp"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
@@ -9,7 +18,7 @@
         android:layout_gravity="center_horizontal"
         android:textColor="@color/white"
         android:textSize="16sp"
-        android:text="7:00 PM"
+        android:text="@{item.hour}"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
@@ -24,8 +33,10 @@
         android:layout_gravity="center_horizontal"
         android:textColor="@color/white"
         android:textSize="16sp"
-        android:text="22C"
+        android:text="@{item.temp}"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
 </LinearLayout>
+
+</layout>
