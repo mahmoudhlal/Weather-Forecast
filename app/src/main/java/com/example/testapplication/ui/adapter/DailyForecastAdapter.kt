@@ -14,10 +14,10 @@ import kotlin.math.roundToInt
 
 class DailyForecastAdapter : BaseRecyclerAdapter<ViewDailyForecastBinding>() {
 
-    private var todayForecastList : ArrayList<Item> ?= arrayListOf()
+    private var dailyForecastList : ArrayList<Item> ?= arrayListOf()
 
-    fun updateList(todayForecastList : ArrayList<Item>?){
-        this.todayForecastList = todayForecastList
+    fun updateList(dailyForecastList : ArrayList<Item>?){
+        this.dailyForecastList = dailyForecastList
         notifyDataSetChanged()
     }
 
@@ -29,17 +29,17 @@ class DailyForecastAdapter : BaseRecyclerAdapter<ViewDailyForecastBinding>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val itemPosition = todayForecastList?.get(position)
+        val itemPosition = dailyForecastList?.get(position)
         val item = WeatherInfo(0 ,"", itemPosition?.main?.temp.toString(),
             itemPosition?.main?.temp_min?.toCelsius()?.roundToInt().toString(),
             itemPosition?.main?.temp_max?.toCelsius()?.roundToInt().toString(),
             itemPosition?.weather?.get(0)?.description?.capitalize()
-            , todayForecastList?.get(position)?.dt_txt?.toDayFormat())
+            , dailyForecastList?.get(position)?.dt_txt?.toDayFormat())
         holder.binding.item = item
     }
 
     override fun getItemCount(): Int {
-        return todayForecastList?.size ?: 0
+        return dailyForecastList?.size ?: 0
     }
 
 }

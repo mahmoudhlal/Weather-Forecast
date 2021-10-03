@@ -1,5 +1,7 @@
 package com.example.testapplication.model.custom
 
+import com.example.testapplication.utils.toDayFormat
+
 class WeatherInfo (
     var id: Int? = null,
     val cityName: String?,
@@ -15,4 +17,11 @@ class WeatherInfo (
     fun mixTempWithOneDeg():String{
         return "$tempMax / $tempMin\u2103"
     }
+    fun mixManyString():String{
+        return "$temp\u2103 ${date?.toDayFormat()} - $cityName"
+    }
+     fun mixCityName():String{
+        return "forecast $cityName"
+    }
+
 }

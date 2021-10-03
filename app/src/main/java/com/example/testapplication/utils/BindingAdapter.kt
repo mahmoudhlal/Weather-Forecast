@@ -1,6 +1,7 @@
 package com.example.testapplication.utils
 
 import android.view.View
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView

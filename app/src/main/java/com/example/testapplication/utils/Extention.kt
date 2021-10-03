@@ -2,6 +2,10 @@ package com.example.testapplication.utils
 
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import android.app.Activity
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+
 
 fun Double.toCelsius() : Double{
     return this - 273.15
@@ -39,5 +43,11 @@ fun String.toDayFormat() : String?{
     return null
 }
 
+
+fun View.hideKeyboard() {
+    val imm: InputMethodManager =
+        this.context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(this.windowToken, 0)
+}
 
 

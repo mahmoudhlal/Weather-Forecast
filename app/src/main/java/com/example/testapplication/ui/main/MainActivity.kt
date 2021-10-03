@@ -3,16 +3,15 @@ package com.example.testapplication.ui.main
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import com.example.testapplication.R
 import com.example.testapplication.core.BaseActivity
 import com.example.testapplication.databinding.ActivityMainBinding
 import com.example.testapplication.model.custom.Location
 import com.example.testapplication.utils.Status
+import com.example.testapplication.utils.hideKeyboard
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import permissions.dispatcher.NeedsPermission
@@ -38,6 +37,12 @@ class MainActivity : BaseActivity() {
         mBinding?.vmMain = mainViewModel
 
         setupObserver()
+        mBinding?.searchView?.let { mainViewModel.search(it) }
+        mBinding?.searchView?.setOnCloseListener {
+            mainViewModel.closeSearch()
+            mBinding?.searchView?.hideKeyboard()
+            return@setOnCloseListener true
+        }
     }
 
     private fun setupObserver() {
