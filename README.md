@@ -3,9 +3,9 @@ Weather-Forecast app that implements MVVM architecture using Kotlin, Hilt-Dagger
 
 The app has following packages:
 
-model: It contains all the data accessing and manipulating components.
-di: Dependency providing classes using Hilt-Dagger.
-ui: View classes along with their corresponding ViewModel.
-local: Room DB to store data in local.
-api: Retrofit2 component.
-utils: Utility classes.
+  1. model: It contains all the data accessing and manipulating components.
+  2. di: Dependency providing classes using Hilt-Dagger.
+  3. ui: View classes along with their corresponding ViewModel.
+  4. local: Room DB to store data in local.
+  5. api: Retrofit2 component.
+  6. utils: Utility classes.
